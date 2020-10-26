@@ -11,6 +11,7 @@ BACKUP_BACKEND="${BACKUP_BACKEND:-$BACKUP_DIR/backup-backend-swift.sh}"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-config}"
 BACKUP_BASENAME="${BACKUP_BASENAME:-config}"
 CONFIG_LIST="${CONFIG_LIST:-$BACKUP_DIR/backup-config-list}"
+CONFIG_ROOTFS="${CONFIG_ROOTFS:-}"
 
 # Check environment
 if [ ! -e "$BACKUP_BACKEND" ]; then
@@ -29,12 +30,12 @@ FAILURE=0
 if [ -e "$CONFIG_LIST" ]; then
 	# Copy files and directories from backup list into a temp directory
 	echo "Archiving..." >> $OUTPUT_FILE
-	while read ENTRY ; do
-		if [[ -n "$ENTRY" && "${ENTRY:0:1}" != "#" && "${ENTRY:0:2}" != "//" ]] ; then
-			NBFILES=`ls -1 $ENTRY 2>/dev/null | wc -l`
-			if [ "$NBFILES" != "0" ] ; then
+	while read ENTRY; do
+		if [[ -n "$ENTRY" && "${ENTRY:0:1}" != "#" && "${ENTRY:0:2}" != "//" ]]; then
+			NBFILES=`ls -1 ${CONFIG_ROOTFS}${ENTRY} 2>/dev/null | wc -l`
+			if [ "$NBFILES" != "0" ]; then
 				echo "$ENTRY ($NBFILES file(s))" >> $OUTPUT_FILE
-				cp -a --parents $ENTRY "$WORK_DIR"
+				cp -a --parents ${CONFIG_ROOTFS}${ENTRY} "$WORK_DIR"
 			fi
 		fi
 	done < "$CONFIG_LIST"
