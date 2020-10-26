@@ -12,7 +12,9 @@ RUN zypper in -y rclone rsync \
 COPY ./root /
 RUN groupadd backup &&\
 	useradd -d /home/backups -g backup -s /bin/bash backup &&\
-	chown -R backup:backup /home/backups
+	chown -R backup:backup /home/backups &&\
+	confd -onetime -backend env &&\
+	chmod -R a+rX /etc/openldap
 
 # Execution
 USER backup
