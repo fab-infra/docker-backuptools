@@ -7,7 +7,7 @@
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
 BACKUP_OPENRC_FILE="${BACKUP_OPENRC_FILE:-$BACKUP_DIR/backup-openrc.sh}"
-BACKUP_CONTAINER="${BACKUP_CONTAINER:-backups_$(hostname -s)}"
+BACKUP_CONTAINER="${BACKUP_CONTAINER:-backups}"
 
 # Check backend
 function backup_check
