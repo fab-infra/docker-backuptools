@@ -2,7 +2,7 @@
 FROM fcrespel/base-image:opensuse15.2
 
 # Packages
-RUN zypper in -y rclone rsync \
+RUN zypper in -y rclone rsync xz \
 	python3-pip python3-swiftclient python3-keystoneclient \
 	mariadb-client \
 	openldap2 openldap2-client &&\
