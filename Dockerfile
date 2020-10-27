@@ -14,7 +14,7 @@ RUN groupadd backup &&\
 	useradd -d /home/backups -g backup -s /bin/bash backup &&\
 	chown -R backup:backup /home/backups &&\
 	confd -onetime -backend env &&\
-	chmod -R a+rX /etc/openldap
+	chmod -R a+rwX /etc/openldap /var/lib/ldap
 
 # Execution
 USER backup
