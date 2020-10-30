@@ -8,6 +8,7 @@
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
 BACKUP_OPENRC_FILE="${BACKUP_OPENRC_FILE:-$BACKUP_DIR/backup-openrc.sh}"
 BACKUP_CONTAINER="${BACKUP_CONTAINER:-backups}"
+BACKUP_RCLONE_REMOTE="${BACKUP_RCLONE_REMOTE:-pca}"
 
 # Check backend
 function backup_check
@@ -75,4 +76,14 @@ function backup_prune
 		fi
 		NUMBER=`expr $NUMBER + 1`
 	done
+}
+
+# Sync files
+function backup_sync
+{
+	local SUBDIR="$1"
+	local SRC_DIR="$2"
+	local EXT_OPTS="${@:3}"
+	local DEF_OPTS="--copy-links --delete-excluded --ignore-errors -v"
+	rclone sync "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_CONTAINER/$SUBDIR/" $DEF_OPTS $EXT_OPTS
 }

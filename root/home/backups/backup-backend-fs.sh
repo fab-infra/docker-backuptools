@@ -56,3 +56,13 @@ function backup_prune
 		NUMBER=`expr $NUMBER + 1`
 	done
 }
+
+# Sync files
+function backup_sync
+{
+	local SUBDIR="$1"
+	local SRC_DIR="$1"
+	local EXT_OPTS="${@:3}"
+	local DEF_OPTS="--archive --delete-excluded --ignore-errors -v"
+	rsync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_DIR/$SUBDIR/"
+}
