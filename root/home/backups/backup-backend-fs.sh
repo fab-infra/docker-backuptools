@@ -64,5 +64,8 @@ function backup_sync
 	local SRC_DIR="$1"
 	local EXT_OPTS="${@:3}"
 	local DEF_OPTS="--archive --delete-excluded --ignore-errors -v"
+	if [ -e "$SRC_DIR/backup.filter" ]; then
+		DEF_OPTS="$DEF_OPTS --filter='merge $SRC_DIR/backup.filter'"
+	fi
 	rsync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_DIR/$SUBDIR/"
 }

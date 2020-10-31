@@ -85,5 +85,8 @@ function backup_sync
 	local SRC_DIR="$2"
 	local EXT_OPTS="${@:3}"
 	local DEF_OPTS="--copy-links --delete-excluded --ignore-errors -v"
-	rclone sync "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_CONTAINER/$SUBDIR/" $DEF_OPTS $EXT_OPTS
+	if [ -e "$SRC_DIR/backup.filter" ]; then
+		DEF_OPTS="$DEF_OPTS --filter-from='$SRC_DIR/backup.filter'"
+	fi
+	rclone sync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_CONTAINER/$SUBDIR/"
 }
