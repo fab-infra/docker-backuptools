@@ -6,16 +6,17 @@
 
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_BACKEND="${BACKUP_BACKEND:-$BACKUP_DIR/backup-backend-swift.sh}"
+BACKUP_BACKEND="${BACKUP_BACKEND:-swift}"
+BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-files}"
 SRC_DIR="$1"
 
 # Check environment
-if [ ! -e "$BACKUP_BACKEND" ]; then
+if [ ! -e "$BACKUP_BACKEND_SH" ]; then
 	echo "Backup backend '$BACKUP_BACKEND' does not exist (BACKUP_BACKEND environment variable)"
 	exit 1
 else
-	. "$BACKUP_BACKEND"
+	. "$BACKUP_BACKEND_SH"
 	backup_check || exit 1
 fi
 

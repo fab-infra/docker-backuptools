@@ -1,28 +1,28 @@
 #!/bin/bash
 #
-# OpenStack Swift backup backend
+# Google Cloud Storage backup backend
 # By Fabien CRESPEL <fabien@crespel.net>
 #
 
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_OPENRC_FILE="${BACKUP_OPENRC_FILE:-$BACKUP_DIR/backup-openrc.sh}"
-BACKUP_CONTAINER="${BACKUP_CONTAINER:-backups}"
-BACKUP_RCLONE_REMOTE="${BACKUP_RCLONE_REMOTE:-pca}"
+BACKUP_SA_FILE="${BACKUP_SA_FILE:-$BACKUP_DIR/backup-sa.json}"
+BACKUP_RCLONE_REMOTE="${BACKUP_RCLONE_REMOTE:-gcs}"
+GSUTIL_OPTS="-o Credentials:gs_service_key_file=$BACKUP_SA_FILE"
 
 # Check backend
 function backup_check
 {
-	if [ ! -e "$BACKUP_OPENRC_FILE" ]; then
-		echo "OpenStack RC file '$BACKUP_OPENRC_FILE' does not exist (BACKUP_OPENRC_FILE environment variable)"
+	if [ ! -e "$BACKUP_SA_FILE" ]; then
+		echo "GCS Service Account file '$BACKUP_SA_FILE' does not exist (BACKUP_SA_FILE environment variable)"
 		return 1
 	fi
-	if [ -z "$BACKUP_CONTAINER" ]; then
-		echo "OpenStack backup container must be specified (BACKUP_CONTAINER environment variable)"
+	if [ -z "$BACKUP_BUCKET" ]; then
+		echo "GCS backup bucket must be specified (BACKUP_BUCKET environment variable)"
 		return 1
 	fi
-	if ! command -v swift > /dev/null 2>&1; then
-		echo "OpenStack Swift client is missing, please install it first"
+	if ! command -v gsutil > /dev/null 2>&1; then
+		echo "GCS client (gsutil) is missing, please install it first"
 		return 1
 	fi
 	return 0
@@ -32,8 +32,7 @@ function backup_check
 function backup_list
 {
 	local SUBDIR="$1"
-	source "$BACKUP_OPENRC_FILE"
-	swift list -p "$SUBDIR/" -d "/" "$BACKUP_CONTAINER" | sed "s#^$SUBDIR/##g"
+	gsutil $GSUTIL_OPTS ls -r "gs://$BACKUP_BUCKET/$SUBDIR/**"
 }
 
 # Save a backup
@@ -43,9 +42,8 @@ function backup_save
 	local FILE="$2"
 	local TEMPDIR=`mktemp -d`
 	local RET=0
-	source "$BACKUP_OPENRC_FILE"
 	if mkdir -p "$TEMPDIR/$SUBDIR" && cp "$FILE" "$TEMPDIR/$SUBDIR"; then
-		( cd "$TEMPDIR" && swift upload "$BACKUP_CONTAINER" "$SUBDIR" )
+		( cd "$TEMPDIR" && gsutil $GSUTIL_OPTS cp -r "$SUBDIR" "gs://$BACKUP_BUCKET" )
 		RET=$?
 	else
 		echo "Failed to copy archive file ($FILE) to temporary directory before upload"
@@ -60,8 +58,7 @@ function backup_delete
 {
 	local SUBDIR="$1"
 	local FILE_NAME="$2"
-	source "$BACKUP_OPENRC_FILE"
-	swift delete "$BACKUP_CONTAINER" "$SUBDIR/$FILE_NAME"
+	gsutil $GSUTIL_OPTS rm "gs://$BACKUP_BUCKET/$SUBDIR/$FILE_NAME"
 }
 
 # Prune outdated backups
@@ -90,6 +87,5 @@ function backup_sync
 	if [ -e "$SRC_DIR/backup.filter" ]; then
 		DEF_OPTS="$DEF_OPTS --filter-from=$SRC_DIR/backup.filter"
 	fi
-	source "$BACKUP_OPENRC_FILE"
-	rclone sync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_CONTAINER/$SUBDIR/"
+	rclone sync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_BUCKET/$SUBDIR/"
 }

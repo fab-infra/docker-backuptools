@@ -8,6 +8,13 @@ RUN zypper in -y rclone rsync xz zip \
 	openldap2 openldap2-client &&\
 	zypper clean -a
 
+# GSUtil
+RUN wget https://storage.googleapis.com/pub/gsutil.tar.gz &&\
+	tar -xf gsutil.tar.gz -C /opt &&\
+	rm gsutil.tar.gz &&\
+	ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil &&\
+	ln -s /usr/bin/python3 /usr/bin/python
+
 # Files
 COPY ./root /
 RUN groupadd backup &&\

@@ -5,20 +5,21 @@
 #
 
 # Script variables
-MAX_BACKUPS=12
+MAX_BACKUPS=${MAX_BACKUPS:-30}
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_BACKEND="${BACKUP_BACKEND:-$BACKUP_DIR/backup-backend-swift.sh}"
+BACKUP_BACKEND="${BACKUP_BACKEND:-swift}"
+BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-config}"
 BACKUP_BASENAME="${BACKUP_BASENAME:-config}"
 CONFIG_LIST="${CONFIG_LIST:-$BACKUP_DIR/backup-config-list}"
 CONFIG_ROOTFS="${CONFIG_ROOTFS:-}"
 
 # Check environment
-if [ ! -e "$BACKUP_BACKEND" ]; then
+if [ ! -e "$BACKUP_BACKEND_SH" ]; then
 	echo "Backup backend '$BACKUP_BACKEND' does not exist (BACKUP_BACKEND environment variable)"
 	exit 1
 else
-	. "$BACKUP_BACKEND"
+	. "$BACKUP_BACKEND_SH"
 	backup_check || exit 1
 fi
 
