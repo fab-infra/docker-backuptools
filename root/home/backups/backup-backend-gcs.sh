@@ -8,7 +8,7 @@
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
 BACKUP_SA_FILE="${BACKUP_SA_FILE:-$BACKUP_DIR/backup-sa.json}"
 BACKUP_RCLONE_REMOTE="${BACKUP_RCLONE_REMOTE:-gcs}"
-GSUTIL_OPTS="-o Credentials:gs_service_key_file=$BACKUP_SA_FILE"
+GSUTIL_OPTS="-q -o Credentials:gs_service_key_file=$BACKUP_SA_FILE"
 
 # Check backend
 function backup_check
