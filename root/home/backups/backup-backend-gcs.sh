@@ -40,17 +40,7 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
-	local TEMPDIR=`mktemp -d`
-	local RET=0
-	if mkdir -p "$TEMPDIR/$SUBDIR" && cp "$FILE" "$TEMPDIR/$SUBDIR"; then
-		( cd "$TEMPDIR" && gsutil $GSUTIL_OPTS cp -r "$SUBDIR" "gs://$BACKUP_BUCKET" )
-		RET=$?
-	else
-		echo "Failed to copy archive file ($FILE) to temporary directory before upload"
-		RET=1
-	fi
-	rm -Rf "$TEMPDIR"
-	return $RET
+	gsutil $GSUTIL_OPTS cp "$FILE" "gs://$BACKUP_BUCKET/$SUBDIR/"
 }
 
 # Delete a backup
