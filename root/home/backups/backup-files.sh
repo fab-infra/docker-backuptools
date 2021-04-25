@@ -6,7 +6,7 @@
 
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_BACKEND="${BACKUP_BACKEND:-swift}"
+BACKUP_BACKEND="${BACKUP_BACKEND:-fs}"
 BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-files}"
 SRC_DIR="$1"
@@ -18,6 +18,12 @@ if [ ! -e "$BACKUP_BACKEND_SH" ]; then
 else
 	. "$BACKUP_BACKEND_SH"
 	backup_check || exit 1
+fi
+
+# Check argument
+if [ -z "$SRC_DIR" ]; then
+	echo "Usage: $0 <source directory>"
+	exit 1
 fi
 
 FAILURE=0

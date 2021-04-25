@@ -7,7 +7,7 @@
 # Script variables
 MAX_BACKUPS=${MAX_BACKUPS:-30}
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_BACKEND="${BACKUP_BACKEND:-swift}"
+BACKUP_BACKEND="${BACKUP_BACKEND:-fs}"
 BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-config}"
 BACKUP_BASENAME="${BACKUP_BASENAME:-config}"
@@ -63,7 +63,7 @@ if [ -e "$CONFIG_LIST" ]; then
 		FAILURE=1
 	fi
 else
-	echo "The backup list file '$CONFIG_LIST' does not exist." >> $OUTPUT_FILE
+	echo "ERROR: backup list file '$CONFIG_LIST' does not exist." >> $OUTPUT_FILE
 	FAILURE=1
 fi
 

@@ -13,8 +13,8 @@ function backup_check
 	elif [ -z "$BACKUP_FTP_USER" ]; then
 		echo "Backup FTP user must be specified (BACKUP_FTP_USER environment variable)"
 		return 1
-	elif [ -z "$BACKUP_FTP_PWD" ]; then
-		echo "Backup FTP password must be specified (BACKUP_FTP_PWD environment variable)"
+	elif [ -z "$BACKUP_FTP_PASSWORD" ]; then
+		echo "Backup FTP password must be specified (BACKUP_FTP_PASSWORD environment variable)"
 		return 1
 	fi
 	return 0
@@ -24,7 +24,7 @@ function backup_check
 function backup_list
 {
 	local SUBDIR="$1"
-	curl -sSf -l -u "$BACKUP_FTP_USER:$BACKUP_FTP_PWD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
+	curl -sSf -l -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
 }
 
 # Save a backup
@@ -32,7 +32,7 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
-	curl -sSf -T "$FILE" --ftp-create-dirs -u "$BACKUP_FTP_USER:$BACKUP_FTP_PWD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
+	curl -sSf -T "$FILE" --ftp-create-dirs -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
 }
 
 # Delete a backup
@@ -40,7 +40,7 @@ function backup_delete
 {
 	local SUBDIR="$1"
 	local FILE_NAME="$2"
-	curl -sSf -Q "-DELE $FILE_NAME" -u "$BACKUP_FTP_USER:$BACKUP_FTP_PWD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
+	curl -sSf -Q "-DELE $FILE_NAME" -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://${BACKUP_FTP_HOST}/${BACKUP_FTP_DIR}/${SUBDIR}/"
 }
 
 # Prune outdated backups

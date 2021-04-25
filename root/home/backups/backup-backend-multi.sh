@@ -16,7 +16,7 @@ function backup_check
 	fi
 	BACKUP_BACKENDS="${BACKUP_BACKENDS//,/ }"
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if [ ! -e "$BACKUP_BACKEND_SH" ]; then
 			echo "Backup backend '$BACKUP_BACKEND' does not exist (BACKUP_BACKENDS environment variable)"
 			return 1
@@ -32,7 +32,7 @@ function backup_list
 {
 	local RET=0
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if ! ( source "$BACKUP_BACKEND_SH" && backup_list "$@" ); then
 			RET=1
 			break
@@ -46,7 +46,7 @@ function backup_save
 {
 	local RET=0
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if ! ( source "$BACKUP_BACKEND_SH" && backup_save "$@" ); then
 			RET=1
 		fi
@@ -59,7 +59,7 @@ function backup_delete
 {
 	local RET=0
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if ! ( source "$BACKUP_BACKEND_SH" && backup_delete "$@" ); then
 			RET=1
 		fi
@@ -72,7 +72,7 @@ function backup_prune
 {
 	local RET=0
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if ! ( source "$BACKUP_BACKEND_SH" && backup_prune "$@" ); then
 			RET=1
 		fi
@@ -85,7 +85,7 @@ function backup_sync
 {
 	local RET=0
 	for BACKUP_BACKEND in $BACKUP_BACKENDS; do
-		BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+		local BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 		if ! ( source "$BACKUP_BACKEND_SH" && backup_sync "$@" ); then
 			RET=1
 		fi

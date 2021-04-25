@@ -6,25 +6,26 @@
 
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_OPENRC_FILE="${BACKUP_OPENRC_FILE:-$BACKUP_DIR/backup-openrc.sh}"
-BACKUP_CONTAINER="${BACKUP_CONTAINER:-backups}"
-BACKUP_RCLONE_REMOTE="${BACKUP_RCLONE_REMOTE:-pca}"
+BACKUP_SWIFT_OPENRC_FILE="${BACKUP_SWIFT_OPENRC_FILE:-$BACKUP_DIR/backup-openrc.sh}"
+BACKUP_SWIFT_CONTAINER="${BACKUP_SWIFT_CONTAINER:-backups}"
+BACKUP_SWIFT_REMOTE="${BACKUP_SWIFT_REMOTE:-pca}"
 
 # Check backend
 function backup_check
 {
-	if [ ! -e "$BACKUP_OPENRC_FILE" ]; then
-		echo "OpenStack RC file '$BACKUP_OPENRC_FILE' does not exist (BACKUP_OPENRC_FILE environment variable)"
+	if [ ! -e "$BACKUP_SWIFT_OPENRC_FILE" ]; then
+		echo "OpenStack RC file '$BACKUP_SWIFT_OPENRC_FILE' does not exist (BACKUP_SWIFT_OPENRC_FILE environment variable)"
 		return 1
 	fi
-	if [ -z "$BACKUP_CONTAINER" ]; then
-		echo "OpenStack backup container must be specified (BACKUP_CONTAINER environment variable)"
+	if [ -z "$BACKUP_SWIFT_CONTAINER" ]; then
+		echo "OpenStack backup container must be specified (BACKUP_SWIFT_CONTAINER environment variable)"
 		return 1
 	fi
 	if ! command -v swift > /dev/null 2>&1; then
 		echo "OpenStack Swift client is missing, please install it first"
 		return 1
 	fi
+	source "$BACKUP_SWIFT_OPENRC_FILE"
 	return 0
 }
 
@@ -32,8 +33,8 @@ function backup_check
 function backup_list
 {
 	local SUBDIR="$1"
-	source "$BACKUP_OPENRC_FILE"
-	swift list -p "$SUBDIR/" -d "/" "$BACKUP_CONTAINER" | sed "s#^$SUBDIR/##g"
+	source "$BACKUP_SWIFT_OPENRC_FILE"
+	swift list -p "$SUBDIR/" -d "/" "$BACKUP_SWIFT_CONTAINER" | sed "s#^$SUBDIR/##g"
 }
 
 # Save a backup
@@ -43,9 +44,9 @@ function backup_save
 	local FILE="$2"
 	local TEMPDIR=`mktemp -d`
 	local RET=0
-	source "$BACKUP_OPENRC_FILE"
+	source "$BACKUP_SWIFT_OPENRC_FILE"
 	if mkdir -p "$TEMPDIR/$SUBDIR" && cp "$FILE" "$TEMPDIR/$SUBDIR"; then
-		( cd "$TEMPDIR" && swift upload "$BACKUP_CONTAINER" "$SUBDIR" )
+		( cd "$TEMPDIR" && swift upload "$BACKUP_SWIFT_CONTAINER" "$SUBDIR" )
 		RET=$?
 	else
 		echo "Failed to copy archive file ($FILE) to temporary directory before upload"
@@ -60,8 +61,8 @@ function backup_delete
 {
 	local SUBDIR="$1"
 	local FILE_NAME="$2"
-	source "$BACKUP_OPENRC_FILE"
-	swift delete "$BACKUP_CONTAINER" "$SUBDIR/$FILE_NAME"
+	source "$BACKUP_SWIFT_OPENRC_FILE"
+	swift delete "$BACKUP_SWIFT_CONTAINER" "$SUBDIR/$FILE_NAME"
 }
 
 # Prune outdated backups
@@ -86,10 +87,10 @@ function backup_sync
 	local SUBDIR="$1"
 	local SRC_DIR="$2"
 	local EXT_OPTS="${@:3}"
-	local DEF_OPTS="--copy-links --delete-excluded --ignore-errors -v"
+	local DEF_OPTS="--links --delete-excluded --ignore-errors -v"
 	if [ -e "$SRC_DIR/backup.filter" ]; then
 		DEF_OPTS="$DEF_OPTS --filter-from=$SRC_DIR/backup.filter"
 	fi
-	source "$BACKUP_OPENRC_FILE"
-	rclone sync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_RCLONE_REMOTE:$BACKUP_CONTAINER/$SUBDIR/"
+	source "$BACKUP_SWIFT_OPENRC_FILE"
+	rclone sync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_SWIFT_REMOTE:$BACKUP_SWIFT_CONTAINER/$SUBDIR/"
 }
