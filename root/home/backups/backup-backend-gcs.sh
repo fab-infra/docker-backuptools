@@ -73,7 +73,7 @@ function backup_sync
 	local SUBDIR="$1"
 	local SRC_DIR="$2"
 	local EXT_OPTS="${@:3}"
-	local DEF_OPTS="--links --delete-excluded --ignore-errors -v"
+	local DEF_OPTS="--fast-list --links --delete-excluded --ignore-errors -v"
 	if [ -e "$SRC_DIR/backup.filter" ]; then
 		DEF_OPTS="$DEF_OPTS --filter-from=$SRC_DIR/backup.filter"
 	fi

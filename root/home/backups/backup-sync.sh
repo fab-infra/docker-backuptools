@@ -6,7 +6,7 @@
 
 # Script variables
 BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_SYNC_RCLONE_OPTS="--ignore-errors -v"
+BACKUP_SYNC_RCLONE_OPTS="--fast-list --ignore-errors -v"
 
 # Load backends
 if [ -n "$BACKUP_SYNC_BACKENDS" ]; then
