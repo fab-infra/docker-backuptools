@@ -15,9 +15,12 @@ if [ -n "$BACKUP_SYNC_BACKENDS" ]; then
 		BACKUP_SYNC_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_SYNC_BACKEND}.sh"
 		if [ ! -e "$BACKUP_SYNC_BACKEND_SH" ]; then
 			echo "Backup backend '$BACKUP_SYNC_BACKEND' does not exist (BACKUP_SYNC_BACKENDS environment variable)"
-			return 1
-		elif ! source "$BACKUP_SYNC_BACKEND_SH" && backup_check; then
-			return 1
+			exit 1
+		else
+			source "$BACKUP_SYNC_BACKEND_SH"
+			if ! backup_check; then
+				exit 1
+			fi
 		fi
 	done
 fi
@@ -26,8 +29,10 @@ fi
 if [ -n "$BACKUP_SYNC_ARGS" ]; then
 	# Environment arguments
 	while read SRC_PATH TGT_PATH EXT_OPTS; do
-		echo "Syncing $SRC_PATH => $TGT_PATH ..."
-		rclone sync $BACKUP_SYNC_RCLONE_OPTS $EXT_OPTS "$SRC_PATH" "$TGT_PATH"
+		if [ -n "$SRC_PATH" -a -n "$TGT_PATH" ]; then
+			echo "Syncing $SRC_PATH => $TGT_PATH ..."
+			rclone sync $BACKUP_SYNC_RCLONE_OPTS $EXT_OPTS "$SRC_PATH" "$TGT_PATH"
+		fi
 	done <<< "$BACKUP_SYNC_ARGS"
 else
 	# Command-line arguments
