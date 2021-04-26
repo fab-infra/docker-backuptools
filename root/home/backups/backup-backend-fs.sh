@@ -61,7 +61,7 @@ function backup_prune
 function backup_sync
 {
 	local SUBDIR="$1"
-	local SRC_DIR="$1"
+	local SRC_DIR="$2"
 	local EXT_OPTS="${@:3}"
 	local DEF_OPTS="--archive --delete-excluded --ignore-errors -v"
 	if [ -e "$SRC_DIR/backup.filter" ]; then
