@@ -1,5 +1,5 @@
 # Backup tools based on openSUSE Leap 15.2
-FROM fcrespel/base-image:opensuse15.2
+FROM ghcr.io/fab-infra/base-image:opensuse15.2
 
 # Packages
 RUN zypper in -y rclone rsync xz zip \

@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
 
 env:
-  DOCKER_REGISTRY: docker.io
-  DOCKER_REPO: fcrespel
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_REPO: ${{ github.repository_owner }}
   DOCKER_IMAGE: backuptools
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v1
     - name: Build image
       run: |
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} ${DOCKER_REGISTRY}
+        docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${DOCKER_REGISTRY}
         docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:$(basename $GITHUB_REF) .
     - name: Publish image
       run: |
