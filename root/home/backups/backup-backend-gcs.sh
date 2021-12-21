@@ -32,7 +32,7 @@ function backup_check
 function backup_list
 {
 	local SUBDIR="$1"
-	gsutil $BACKUP_GCS_GSUTIL_OPTS ls -r "gs://$BACKUP_GCS_BUCKET/$SUBDIR/**"
+	gsutil $BACKUP_GCS_GSUTIL_OPTS ls -r "gs://$BACKUP_GCS_BUCKET/$SUBDIR/**" | sed "s#gs://$BACKUP_GCS_BUCKET/$SUBDIR/##g"
 }
 
 # Save a backup
