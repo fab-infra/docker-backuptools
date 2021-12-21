@@ -29,17 +29,18 @@ DATESTRING=`date +"%Y%m%dT%H%M%S"`
 ARCHIVE_NAME="$BACKUP_BASENAME-$DATESTRING.xz"
 
 # Create backup archive
-if slapcat -f /etc/openldap/slapd.conf -n 1 | xz > "$TMP_DIR/$ARCHIVE_NAME" ; then
+echo "Creating LDAP backup archive '$ARCHIVE_NAME'..."
+if slapcat -f /etc/openldap/slapd.conf -n 1 | xz > "$TMP_DIR/$ARCHIVE_NAME"; then
 	if backup_save "$BACKUP_SUBDIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 		rm -f "$TMP_DIR/$ARCHIVE_NAME"
 		backup_prune "$BACKUP_SUBDIR" "^$BACKUP_BASENAME" "$MAX_BACKUPS"
 	else
-		echo "ERROR: failed to save backup archive '$ARCHIVE_NAME' for LDAP directory (exit code: $?)"
+		echo "ERROR: failed to save LDAP backup archive '$ARCHIVE_NAME' (exit code: $?)"
 		rm -f "$TMP_DIR/$ARCHIVE_NAME"
 		FAILURE=1
 	fi
 else
-	echo "ERROR: failed to create backup archive '$TMP_DIR/$ARCHIVE_NAME' for LDAP directory (exit code: $?)"
+	echo "ERROR: failed to create LDAP backup archive '$TMP_DIR/$ARCHIVE_NAME' (exit code: $?)"
 	rm -f "$TMP_DIR/$ARCHIVE_NAME"
 	FAILURE=1
 fi

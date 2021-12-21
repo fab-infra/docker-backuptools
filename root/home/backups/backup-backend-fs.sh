@@ -30,6 +30,7 @@ function backup_save
 	local SUBDIR="$1"
 	local FILE="$2"
 	local FILE_NAME=`basename "$FILE"`
+	echo "Saving '$BACKUP_DIR/$SUBDIR/$FILE_NAME'..."
 	mkdir -p "$BACKUP_DIR/$SUBDIR" && touch "$BACKUP_DIR/$SUBDIR/$FILE_NAME" && cp "$FILE" "$BACKUP_DIR/$SUBDIR/$FILE_NAME"
 }
 
@@ -38,6 +39,7 @@ function backup_delete
 {
 	local SUBDIR="$1"
 	local FILE_NAME="$2"
+	echo "Deleting '$BACKUP_DIR/$SUBDIR/$FILE_NAME'..."
 	rm -f "$BACKUP_DIR/$SUBDIR/$FILE_NAME"
 }
 
@@ -48,9 +50,9 @@ function backup_prune
 	local FILE_NAME_REGEX="$2"
 	local MAX_BACKUPS="$3"
 	local NUMBER=1
+	echo "Pruning backups in '$BACKUP_DIR/$SUBDIR/'... (max: $MAX_BACKUPS)"
 	backup_list "$SUBDIR" | grep "$FILE_NAME_REGEX" | sort -r | while read BACKUPFILE; do
-		if [ "$NUMBER" -gt "$MAX_BACKUPS" ] ; then
-			echo "Removing backup file $BACKUPFILE"
+		if [ "$NUMBER" -gt "$MAX_BACKUPS" ]; then
 			backup_delete "$SUBDIR" "$BACKUPFILE"
 		fi
 		NUMBER=`expr $NUMBER + 1`
@@ -67,5 +69,6 @@ function backup_sync
 	if [ -e "$SRC_DIR/backup.filter" ]; then
 		DEF_OPTS="$DEF_OPTS --filter='merge $SRC_DIR/backup.filter'"
 	fi
+	echo "Syncing '$SRC_DIR' to '$BACKUP_DIR/$SUBDIR/'..."
 	rsync $DEF_OPTS $EXT_OPTS "$SRC_DIR/" "$BACKUP_DIR/$SUBDIR/"
 }

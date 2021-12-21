@@ -29,14 +29,14 @@ FAILURE=0
 
 # Loop over databases
 DB_LIST=`mysqlshow -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD | tail -n+4 | head -n-1 | cut -d' ' -f2`
-for DB in $DB_LIST ; do
+for DB in $DB_LIST; do
 	ISEXCLUDED=0
-	for EXCL in $MYSQL_DB_EXCLUDE ; do
-		if [ "$DB" = "$EXCL" ] ; then
+	for EXCL in $MYSQL_DB_EXCLUDE; do
+		if [ "$DB" = "$EXCL" ]; then
 			ISEXCLUDED=1
 		fi
 	done
-	if [ $ISEXCLUDED -eq 1 ] ; then
+	if [ $ISEXCLUDED -eq 1 ]; then
 		continue
 	fi
 	
@@ -46,18 +46,18 @@ for DB in $DB_LIST ; do
 	ARCHIVE_NAME="$DB-$DATESTRING.xz"
 	
 	# Create backup archive
-	echo "Backing up '$DB' ..."
-	if mysqldump -c --opt -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD "$DB" | xz > "$TMP_DIR/$ARCHIVE_NAME" ; then
+	echo "Creating MySQL backup archive '$ARCHIVE_NAME' for database '$DB'..."
+	if mysqldump -c --opt -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD "$DB" | xz > "$TMP_DIR/$ARCHIVE_NAME"; then
 		if backup_save "$ARCHIVE_DIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
 			backup_prune "$ARCHIVE_DIR" "^$DB" "$MAX_BACKUPS"
 		else
-			echo "ERROR: failed to save backup archive '$ARCHIVE_NAME' for database '$DB' (exit code: $?)"
+			echo "ERROR: failed to save MySQL backup archive '$ARCHIVE_NAME' for database '$DB' (exit code: $?)"
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
 			FAILURE=1
 		fi
 	else
-		echo "ERROR: failed to create backup archive '$TMP_DIR/$ARCHIVE_NAME' for database '$DB' (exit code: $?)"
+		echo "ERROR: failed to create MySQL backup archive '$TMP_DIR/$ARCHIVE_NAME' for database '$DB' (exit code: $?)"
 		rm -f "$TMP_DIR/$ARCHIVE_NAME"
 		FAILURE=1
 	fi

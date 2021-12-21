@@ -25,17 +25,16 @@ fi
 
 WORK_DIR=`mktemp -d`
 TMP_DIR=`mktemp -d`
-OUTPUT_FILE=`mktemp`
 FAILURE=0
 
 if [ -e "$CONFIG_LIST" ]; then
 	# Copy files and directories from backup list into a temp directory
-	echo "Archiving..." >> $OUTPUT_FILE
+	echo "Copying config files..."
 	while read ENTRY; do
 		if [[ -n "$ENTRY" && "${ENTRY:0:1}" != "#" && "${ENTRY:0:2}" != "//" ]]; then
 			NBFILES=`ls -1 ${CONFIG_ROOTFS}${ENTRY} 2>/dev/null | wc -l`
 			if [ "$NBFILES" != "0" ]; then
-				echo "$ENTRY ($NBFILES file(s))" >> $OUTPUT_FILE
+				echo "$ENTRY ($NBFILES file(s))"
 				cp -a --parents ${CONFIG_ROOTFS}${ENTRY} "$WORK_DIR"
 			fi
 		fi
@@ -46,24 +45,24 @@ if [ -e "$CONFIG_LIST" ]; then
 	ARCHIVE_NAME="$BACKUP_BASENAME-$DATESTRING.tar.xz"
 
 	# Create backup archive
-	echo "Creating backup archive '$ARCHIVE_NAME'..." >> $OUTPUT_FILE
-	if tar -cJ -f "$TMP_DIR/$ARCHIVE_NAME" -C "$WORK_DIR" . ; then
+	echo "Creating config backup archive '$ARCHIVE_NAME'..."
+	if tar -cJ -f "$TMP_DIR/$ARCHIVE_NAME" -C "$WORK_DIR" .; then
 		rm -rf "$WORK_DIR"
-		if backup_save "$BACKUP_SUBDIR" "$TMP_DIR/$ARCHIVE_NAME" >> $OUTPUT_FILE; then
+		if backup_save "$BACKUP_SUBDIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
-			backup_prune "$BACKUP_SUBDIR" "^$BACKUP_BASENAME" "$MAX_BACKUPS" >> $OUTPUT_FILE
+			backup_prune "$BACKUP_SUBDIR" "^$BACKUP_BASENAME" "$MAX_BACKUPS"
 		else
-			echo "ERROR: failed to save backup archive '$ARCHIVE_NAME' (exit code: $?)" >> $OUTPUT_FILE
+			echo "ERROR: failed to save config backup archive '$ARCHIVE_NAME' (exit code: $?)"
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
 			FAILURE=1
 		fi
 	else
-		echo "ERROR: failed to create backup archive '$TMP_DIR/$ARCHIVE_NAME' (exit code: $?)" >> $OUTPUT_FILE
-		echo "Temporary files are still in $WORK_DIR, please check and remove them manually." >> $OUTPUT_FILE
+		echo "ERROR: failed to create config backup archive '$TMP_DIR/$ARCHIVE_NAME' (exit code: $?)"
+		echo "Temporary files are still in '$WORK_DIR', please check and remove them manually."
 		FAILURE=1
 	fi
 else
-	echo "ERROR: backup list file '$CONFIG_LIST' does not exist." >> $OUTPUT_FILE
+	echo "ERROR: config backup list file '$CONFIG_LIST' does not exist."
 	FAILURE=1
 fi
 
@@ -71,11 +70,5 @@ fi
 if [ -e "$TMP_DIR" ]; then
 	rm -Rf "$TMP_DIR"
 fi
-
-# Show messages
-if [ $FAILURE -ne 0 ]; then
-	cat $OUTPUT_FILE
-fi
-rm -f $OUTPUT_FILE
 
 exit $FAILURE
