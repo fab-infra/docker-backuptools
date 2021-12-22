@@ -48,7 +48,7 @@ function backup_save
 	if mkdir -p "$TEMPDIR/$SUBDIR" && cp "$FILE" "$TEMPDIR/$SUBDIR"; then
 		echo "Saving 'swift://$BACKUP_SWIFT_CONTAINER/$SUBDIR/$FILE_NAME'..."
 		source "$BACKUP_SWIFT_OPENRC_FILE"
-		( cd "$TEMPDIR" && swift upload "$BACKUP_SWIFT_CONTAINER" "$SUBDIR" )
+		( cd "$TEMPDIR" && swift -q upload "$BACKUP_SWIFT_CONTAINER" "$SUBDIR" )
 		RET=$?
 	else
 		echo "Failed to copy archive file ($FILE) to temporary directory before upload"
@@ -65,7 +65,7 @@ function backup_delete
 	local FILE_NAME="$2"
 	echo "Deleting 'swift://$BACKUP_SWIFT_CONTAINER/$SUBDIR/$FILE_NAME'..."
 	source "$BACKUP_SWIFT_OPENRC_FILE"
-	swift delete "$BACKUP_SWIFT_CONTAINER" "$SUBDIR/$FILE_NAME"
+	swift -q delete "$BACKUP_SWIFT_CONTAINER" "$SUBDIR/$FILE_NAME"
 }
 
 # Prune outdated backups
