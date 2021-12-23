@@ -10,17 +10,21 @@ env:
   DOCKER_REGISTRY: ghcr.io
   DOCKER_REPO: ${{ github.repository_owner }}
   DOCKER_IMAGE: backuptools
+  DOCKER_PLATFORM: linux/amd64,linux/arm64
 
 jobs:
   build-docker:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
-    - name: Build image
+      uses: actions/checkout@v2
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+      with:
+        platforms: arm64
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Build and publish image
       run: |
         docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${DOCKER_REGISTRY}
-        docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:$(basename $GITHUB_REF) .
-    - name: Publish image
-      run: |
-        docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:$(basename $GITHUB_REF)
+        docker buildx build --platform ${DOCKER_PLATFORM} --tag ${DOCKER_REGISTRY}/${DOCKER_REPO}/${DOCKER_IMAGE}:$(basename $GITHUB_REF) --label org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }} --push .
