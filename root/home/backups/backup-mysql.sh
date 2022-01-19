@@ -50,7 +50,7 @@ for DB in $DB_LIST; do
 	if mysqldump -c --opt -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD "$DB" | xz > "$TMP_DIR/$ARCHIVE_NAME"; then
 		if backup_save "$ARCHIVE_DIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
-			backup_prune "$ARCHIVE_DIR" "^$DB" "$MAX_BACKUPS"
+			backup_prune "$ARCHIVE_DIR" "^${DB}-" "$MAX_BACKUPS"
 		else
 			echo "ERROR: failed to save MySQL backup archive '$ARCHIVE_NAME' for database '$DB' (exit code: $?)"
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"

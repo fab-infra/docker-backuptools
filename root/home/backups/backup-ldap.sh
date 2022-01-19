@@ -33,7 +33,7 @@ echo "Creating LDAP backup archive '$ARCHIVE_NAME'..."
 if slapcat -f /etc/openldap/slapd.conf -n 1 | xz > "$TMP_DIR/$ARCHIVE_NAME"; then
 	if backup_save "$BACKUP_SUBDIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 		rm -f "$TMP_DIR/$ARCHIVE_NAME"
-		backup_prune "$BACKUP_SUBDIR" "^$BACKUP_BASENAME" "$MAX_BACKUPS"
+		backup_prune "$BACKUP_SUBDIR" "^${BACKUP_BASENAME}-" "$MAX_BACKUPS"
 	else
 		echo "ERROR: failed to save LDAP backup archive '$ARCHIVE_NAME' (exit code: $?)"
 		rm -f "$TMP_DIR/$ARCHIVE_NAME"

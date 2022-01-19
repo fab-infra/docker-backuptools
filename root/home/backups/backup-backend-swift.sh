@@ -42,6 +42,7 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
+	local LINK="$3"
 	local FILE_NAME=`basename "$FILE"`
 	local TEMPDIR=`mktemp -d`
 	local RET=0
@@ -50,6 +51,11 @@ function backup_save
 		source "$BACKUP_SWIFT_OPENRC_FILE"
 		( cd "$TEMPDIR" && swift -q upload "$BACKUP_SWIFT_CONTAINER" "$SUBDIR" )
 		RET=$?
+		if [ $RET -eq 0 -a -n "$LINK" ]; then
+			echo "Creating copy 'swift://$BACKUP_SWIFT_CONTAINER/$SUBDIR/$LINK'..."
+			swift -q copy -d "/$BACKUP_SWIFT_CONTAINER/$SUBDIR/$LINK" "$BACKUP_SWIFT_CONTAINER" "$SUBDIR/$FILE_NAME"
+			RET=$?
+		fi
 	else
 		echo "Failed to copy archive file ($FILE) to temporary directory before upload"
 		RET=1

@@ -32,9 +32,18 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
+	local LINK="$3"
 	local FILE_NAME=`basename "$FILE"`
+	local RET=0
 	echo "Saving 'ftp://$BACKUP_FTP_HOST/$BACKUP_FTP_DIR/$SUBDIR/$FILE_NAME'..."
-	curl -sSf -T "$FILE" --ftp-create-dirs -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://$BACKUP_FTP_HOST/$BACKUP_FTP_DIR/$SUBDIR/"
+	curl -sSf -T "$FILE" --ftp-create-dirs -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://$BACKUP_FTP_HOST/$BACKUP_FTP_DIR/$SUBDIR/$FILE_NAME"
+	RET=$?
+	if [ $RET -eq 0 -a -n "$LINK" ]; then
+		echo "Creating copy 'ftp://$BACKUP_FTP_HOST/$BACKUP_FTP_DIR/$SUBDIR/$LINK'..."
+		curl -sSf -T "$FILE" --ftp-create-dirs -u "$BACKUP_FTP_USER:$BACKUP_FTP_PASSWORD" "ftp://$BACKUP_FTP_HOST/$BACKUP_FTP_DIR/$SUBDIR/$LINK"
+		RET=$?
+	fi
+	return $RET
 }
 
 # Delete a backup

@@ -40,9 +40,18 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
+	local LINK="$3"
 	local FILE_NAME=`basename "$FILE"`
+	local RET=0
 	echo "Saving 'gs://$BACKUP_GCS_BUCKET/$SUBDIR/$FILE_NAME'..."
 	gsutil $BACKUP_GCS_GSUTIL_OPTS cp "$FILE" "gs://$BACKUP_GCS_BUCKET/$SUBDIR/"
+	RET=$?
+	if [ $RET -eq 0 -a -n "$LINK" ]; then
+		echo "Creating copy 'gs://$BACKUP_GCS_BUCKET/$SUBDIR/$LINK'..."
+		gsutil $BACKUP_GCS_GSUTIL_OPTS cp "gs://$BACKUP_GCS_BUCKET/$SUBDIR/$FILE_NAME" "gs://$BACKUP_GCS_BUCKET/$SUBDIR/$LINK"
+		RET=$?
+	fi
+	return $RET
 }
 
 # Delete a backup

@@ -50,7 +50,7 @@ if [ -e "$CONFIG_LIST" ]; then
 		rm -rf "$WORK_DIR"
 		if backup_save "$BACKUP_SUBDIR" "$TMP_DIR/$ARCHIVE_NAME"; then
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"
-			backup_prune "$BACKUP_SUBDIR" "^$BACKUP_BASENAME" "$MAX_BACKUPS"
+			backup_prune "$BACKUP_SUBDIR" "^${BACKUP_BASENAME}-" "$MAX_BACKUPS"
 		else
 			echo "ERROR: failed to save config backup archive '$ARCHIVE_NAME' (exit code: $?)"
 			rm -f "$TMP_DIR/$ARCHIVE_NAME"

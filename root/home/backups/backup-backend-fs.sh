@@ -29,9 +29,18 @@ function backup_save
 {
 	local SUBDIR="$1"
 	local FILE="$2"
+	local LINK="$3"
 	local FILE_NAME=`basename "$FILE"`
+	local RET=0
 	echo "Saving '$BACKUP_DIR/$SUBDIR/$FILE_NAME'..."
 	mkdir -p "$BACKUP_DIR/$SUBDIR" && touch "$BACKUP_DIR/$SUBDIR/$FILE_NAME" && cp "$FILE" "$BACKUP_DIR/$SUBDIR/$FILE_NAME"
+	RET=$?
+	if [ $RET -eq 0 -a -n "$LINK" ]; then
+		echo "Creating symlink '$BACKUP_DIR/$SUBDIR/$LINK'..."
+		ln -sf "$FILE_NAME" "$BACKUP_DIR/$SUBDIR/$LINK"
+		RET=$?
+	fi
+	return $RET
 }
 
 # Delete a backup
