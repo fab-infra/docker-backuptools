@@ -5,9 +5,9 @@
 #
 
 # Script variables
-BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
+SCRIPT_DIR=`dirname "$0"`
 BACKUP_BACKEND="${BACKUP_BACKEND:-fs}"
-BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+BACKUP_BACKEND_SH="${SCRIPT_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-files}"
 SRC_DIR="$1"
 EXT_OPTS="${@:2}"

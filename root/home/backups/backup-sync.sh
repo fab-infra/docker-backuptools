@@ -5,14 +5,14 @@
 #
 
 # Script variables
-BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
+SCRIPT_DIR=`dirname "$0"`
 BACKUP_SYNC_RCLONE_OPTS="--fast-list --ignore-errors -v"
 
 # Load backends
 if [ -n "$BACKUP_SYNC_BACKENDS" ]; then
 	BACKUP_SYNC_BACKENDS="${BACKUP_SYNC_BACKENDS//,/ }"
 	for BACKUP_SYNC_BACKEND in $BACKUP_SYNC_BACKENDS; do
-		BACKUP_SYNC_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_SYNC_BACKEND}.sh"
+		BACKUP_SYNC_BACKEND_SH="${SCRIPT_DIR}/backup-backend-${BACKUP_SYNC_BACKEND}.sh"
 		if [ ! -e "$BACKUP_SYNC_BACKEND_SH" ]; then
 			echo "Backup backend '$BACKUP_SYNC_BACKEND' does not exist (BACKUP_SYNC_BACKENDS environment variable)"
 			exit 1

@@ -6,12 +6,12 @@
 
 # Script variables
 MAX_BACKUPS=${MAX_BACKUPS:-30}
-BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
+SCRIPT_DIR=`dirname "$0"`
 BACKUP_BACKEND="${BACKUP_BACKEND:-fs}"
-BACKUP_BACKEND_SH="${BACKUP_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
+BACKUP_BACKEND_SH="${SCRIPT_DIR}/backup-backend-${BACKUP_BACKEND}.sh"
 BACKUP_SUBDIR="${BACKUP_SUBDIR:-config}"
 BACKUP_BASENAME="${BACKUP_BASENAME:-config}"
-CONFIG_LIST="${CONFIG_LIST:-$BACKUP_DIR/backup-config-list}"
+CONFIG_LIST="${CONFIG_LIST:-/home/backups/backup-config-list}"
 CONFIG_ROOTFS="${CONFIG_ROOTFS:-}"
 
 # Check environment

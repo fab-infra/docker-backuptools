@@ -5,8 +5,7 @@
 #
 
 # Script variables
-BACKUP_DIR="${BACKUP_DIR:-/home/backups}"
-BACKUP_GCS_SA_FILE="${BACKUP_GCS_SA_FILE:-$BACKUP_DIR/backup-sa.json}"
+BACKUP_GCS_SA_FILE="${BACKUP_GCS_SA_FILE:-/home/backups/backup-sa.json}"
 BACKUP_GCS_REMOTE="${BACKUP_GCS_REMOTE:-gcs}"
 BACKUP_GCS_GSUTIL_OPTS="-q -o Credentials:gs_service_key_file=$BACKUP_GCS_SA_FILE"
 
