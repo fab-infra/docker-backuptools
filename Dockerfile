@@ -8,6 +8,9 @@ RUN zypper in -y rclone rsync xz zip \
 	openldap2 openldap2-client &&\
 	zypper clean -a
 
+# S3cmd
+RUN pip install s3cmd
+
 # GSUtil
 RUN wget https://storage.googleapis.com/pub/gsutil.tar.gz &&\
 	tar -xf gsutil.tar.gz -C /opt &&\
