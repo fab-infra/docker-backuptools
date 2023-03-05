@@ -7,7 +7,9 @@
 # Script variables
 BACKUP_S3_BUCKET="${BACKUP_S3_BUCKET:-backups}"
 BACKUP_S3_REMOTE="${BACKUP_S3_REMOTE:-s3}"
-BACKUP_S3_S3CMD_OPTS="--acl-private"
+BACKUP_S3_PROVIDER="${BACKUP_S3_PROVIDER:-AWS}"
+BACKUP_S3_REGION="${BACKUP_S3_REGION:-eu-west-3}"
+BACKUP_S3_S3CMD_OPTS="${BACKUP_S3_S3CMD_OPTS:---acl-private}"
 
 # Check backend
 function backup_check
@@ -16,10 +18,27 @@ function backup_check
 		echo "S3 backup bucket must be specified (BACKUP_S3_BUCKET environment variable)"
 		return 1
 	fi
+	if [ -z "$BACKUP_S3_PROVIDER" ]; then
+		echo "S3 backup provider must be specified (BACKUP_S3_PROVIDER environment variable)"
+		return 1
+	fi
+	if [ -z "$BACKUP_S3_REGION" ]; then
+		echo "S3 backup region must be specified (BACKUP_S3_REGION environment variable)"
+		return 1
+	fi
 	if ! command -v s3cmd > /dev/null 2>&1; then
 		echo "S3 client (s3cmd) is missing, please install it first"
 		return 1
 	fi
+	if [ "${BACKUP_S3_PROVIDER^^}" = "OVH" ]; then
+		BACKUP_S3_S3CMD_OPTS="${BACKUP_S3_S3CMD_OPTS} --host 's3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net' --host-bucket '%(bucket).s3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net'"
+		export RCLONE_S3_ENDPOINT="s3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net"
+		export RCLONE_S3_PROVIDER="other"
+	else
+		export RCLONE_S3_PROVIDER="$BACKUP_S3_PROVIDER"
+	fi
+	BACKUP_S3_S3CMD_OPTS="${BACKUP_S3_S3CMD_OPTS} --region=${BACKUP_S3_REGION,,}"
+	export RCLONE_S3_REGION="$BACKUP_S3_REGION"
 	return 0
 }
 
