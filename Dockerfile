@@ -1,5 +1,5 @@
-# Backup tools based on openSUSE Leap 15.4
-FROM ghcr.io/fab-infra/base-image:opensuse15.4
+# Backup tools based on openSUSE Leap 15.6
+FROM ghcr.io/fab-infra/base-image:opensuse15.6
 
 # Packages
 RUN zypper in -y rclone rsync xz zip \
@@ -9,10 +9,10 @@ RUN zypper in -y rclone rsync xz zip \
 	zypper clean -a
 
 # S3cmd
-RUN pip install s3cmd
+RUN pip install --no-cache-dir s3cmd==2.4.0
 
 # GSUtil
-RUN wget https://storage.googleapis.com/pub/gsutil.tar.gz &&\
+RUN wget -q https://storage.googleapis.com/pub/gsutil.tar.gz &&\
 	tar -xf gsutil.tar.gz -C /opt &&\
 	rm gsutil.tar.gz &&\
 	ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil &&\
