@@ -35,13 +35,10 @@ include /etc/openldap/schema/cosine.schema
 include /etc/openldap/schema/inetorgperson.schema
 include /etc/openldap/schema/rfc2307bis.schema
 include /etc/openldap/schema/yast.schema
-include /etc/openldap/schema/ppolicy.schema
 
 # Load backend modules such as databas engines
 modulepath /usr/lib64/openldap
 moduleload back_mdb.la
-moduleload back_hdb.la
-moduleload back_bdb.la
 moduleload memberof.la
 moduleload ppolicy.la
 moduleload refint.la
