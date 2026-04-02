@@ -30,10 +30,10 @@ function backup_check
 		echo "S3 client (s3cmd) is missing, please install it first"
 		return 1
 	fi
-	if [ "${BACKUP_S3_PROVIDER^^}" = "OVH" ]; then
+	if [[ "${BACKUP_S3_PROVIDER^^}" == OVH* ]]; then
 		BACKUP_S3_S3CMD_OPTS="${BACKUP_S3_S3CMD_OPTS} --host 's3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net' --host-bucket '%(bucket).s3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net'"
 		export RCLONE_S3_ENDPOINT="s3.${BACKUP_S3_REGION,,}.io.cloud.ovh.net"
-		export RCLONE_S3_PROVIDER="other"
+		export RCLONE_S3_PROVIDER="OVHcloud"
 	else
 		export RCLONE_S3_PROVIDER="$BACKUP_S3_PROVIDER"
 	fi
